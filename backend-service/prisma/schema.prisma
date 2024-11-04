@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,3 +6,87 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id Int  @id @default(autoincrement())
+  email String @unique
+  name String
+  password String
+  solde Float
+  role Role  @default(FINALCUSTOMER)
+  senderId String @db.VarChar(11)
+}
+
+model Contact {
+  id Int @id @default(autoincrement())
+  nameContact String
+  numberContact Int
+}
+
+model SmsCampaign {
+  id Int @id @default(autoincrement())
+  nameCampaign String
+  content String
+  typeCampaign TypeCampaign @default(SMS)
+  dataCampaign DateTime
+}
+
+model Statisque {
+  id Int @id @default(autoincrement())
+  sendSms Int
+  smsRead Int
+  clickRate Int
+}
+
+model Operateur {
+  id Int @id @default(autoincrement())
+  prefixe String
+  operatorName String
+  pays String
+}
+
+model Pricing {
+  id Int @id @default(autoincrement())
+  price Float
+  smsVolume Int
+  currency Currency @default(CFA)
+}
+
+model Api {
+  id Int @id @default(autoincrement())
+  baseUrl String
+  typeApi TypeApi @default(GET)
+  format Format @default(JSON)
+  apiParameter String[]
+}
+
+enum TypeApi {
+  GET
+  POST
+}
+
+enum Format {
+  JSON 
+  RESTFULL
+}
+
+enum Currency {
+  CFA
+  DOLLAR
+  EURO
+}
+
+enum TypeCampaign {
+  SMS
+  SMSENRICHI
+}
+
+enum Role {
+  FINALCUSTOMER
+  SUPERADMIN
+  RETAILER
+  
+}
+
+
+
