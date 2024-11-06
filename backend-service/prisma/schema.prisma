@@ -7,6 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//one-to-many relation ("user and smsCampaign", "user and contact", "user and api", "user and invoicing")
+// many-to-many relation ("user and operateur")
 model User {
   id Int  @id @default(autoincrement())
   email String @unique
@@ -14,8 +16,10 @@ model User {
   password String
   solde Float
   role Role  @default(FINALCUSTOMER)
-  senderId String @db.VarChar(11)
-  createAt DateTime @default(now())
+  createAt DateTime @default(now()) 
+  superAdmin SuperAdmin?
+  retailer Retailer?
+  finalCustomer FinalCustomer?
   contact Contact[]
   smsCampaign SmsCampaign[]
   api Api[]
@@ -23,8 +27,36 @@ model User {
   invoicingId Int
   operateur Tarif[]
 }
+// one-to-many relation ("superAdmin and retailer", "superAdmin and finalCustomer")
+model SuperAdmin {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  retailer Retailer[]
+  finalCustomer FinalCustomer[]
+}
+// one-to-many relation ("retailer and finalCustoner", "retailer and superAdmin")
+model Retailer {
+  id Int @id @default(autoincrement())
+   user User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  finalCustomer FinalCustomer[]
+  superAdmin SuperAdmin @relation(fields: [superAdId], references: [id])
+  superAdId Int
+}
+//one-to-many relation
+model FinalCustomer {
+  id Int @id @default(autoincrement())
+  senderId String @db.VarChar(11)
+   user User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  retailer Retailer @relation(fields: [retailerId], references: [id])
+  retailerId Int
+  superAdmin SuperAdmin @relation(fields: [superAdId], references: [id])
+  superAdId Int
+}
 
-
+//one-to-many relation (user)
 model Contact {
   id Int @id @default(autoincrement())
   nameContact String
@@ -34,6 +66,7 @@ model Contact {
   userId Int
 }
 
+// one-to-many relation ("smsCampaign and user", "smsCampaign and operateur", "smsCampaign and invoicing")
 model SmsCampaign {
   id Int @id @default(autoincrement())
   nameCampaign String
@@ -52,7 +85,8 @@ model SmsCampaign {
   invoicingId Int
 }
 
-
+// one-to-many relation (smsCampaign)
+// many-to-many relation (user)
 model Operateur {
   id Int @id @default(autoincrement())
   prefixe String 
@@ -62,7 +96,7 @@ model Operateur {
   smsCampaign SmsCampaign[]
   users Tarif[]
 }
-
+// many-to-many relation (user and aperateur) associatif table
 model Tarif {
   user User @relation(fields: [userId], references: [id])
   userId Int
@@ -74,7 +108,7 @@ model Tarif {
 
   @@id([userId, operateurId])
 }
-
+// one-to-many relation ( user, smsCampaign)
 model Invoicing {
   id Int @id @default(autoincrement())
   modeI ModeInvoicing @default(VOLUME)
@@ -87,7 +121,7 @@ model Transaction {
   cost Float
   sentStatus Boolean
 }
-
+// one-to-many relation ()
 model Api {
   id Int @id @default(autoincrement())
   baseUrl String
@@ -98,6 +132,7 @@ model Api {
   user User @relation(fields: [userId], references: [id])
   userId Int
 }
+
 
 enum TypeApi {
   GET
