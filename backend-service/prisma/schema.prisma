@@ -9,6 +9,7 @@ datasource db {
 
 //one-to-many relation ("user and smsCampaign", "user and contact", "user and api", "user and invoicing")
 // many-to-many relation ("user and operateur")
+
 model User {
   id Int  @id @default(autoincrement())
   email String @unique
@@ -132,6 +133,7 @@ model Api {
   user User @relation(fields: [userId], references: [id])
   userId Int
 }
+
 
 
 enum TypeApi {
