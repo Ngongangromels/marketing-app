@@ -15,8 +15,8 @@ model User {
   email String @unique
   name String
   password String
-  solde Float
-  role Role  @default(FINALCUSTOMER)
+  solde Float @default(0.0)
+  role Role  @default(SUPERADMIN)
   createAt DateTime @default(now()) 
   superAdmin SuperAdmin?
   retailer Retailer?
@@ -24,8 +24,8 @@ model User {
   contact Contact[]
   smsCampaign SmsCampaign[]
   api Api[]
-  invoicing Invoicing @relation(fields: [invoicingId], references: [id])
-  invoicingId Int
+  invoicing Invoicing? @relation(fields: [invoicingId], references: [id])
+  invoicingId Int?
   operateur Tarif[]
 }
 // one-to-many relation ("superAdmin and retailer", "superAdmin and finalCustomer")

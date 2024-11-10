@@ -2,35 +2,39 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 
+
 const server = express()
 
-server.use(express.json)
+server.use(express.json())
 server.use(express.urlencoded({ extended: false }))
-var corsOptions = {
-    origin: 'http://localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-}
-server.use(cors(corsOptions))
 
-// server.use((req, res, next) => {
-//     res.setHeader('Access-Controll-Allow-Origin', '*')
-//     res.setHeader('Access-Controll-Allow-Headers', 'Origin,X-Requested-with,Content,Accept,Content-Type,Authorization')
-//     res.setHeader('Access-Controll-Allow-Methods', 'GET, POST,PUT,DELETE,HEAD,PATCH')
-//     next()
-// })
+server.use(cors())
 
-server.get('./', (req, res) => {
+server.use((req, res, next) => {
+    res.setHeader('Access-Controll-Allow-Origin', '*')
+    res.setHeader('Access-Controll-Allow-Headers', 'Origin,X-Requested-with,Content,Accept,Content-Type,Authorization')
+    res.setHeader('Access-Controll-Allow-Methods', 'GET, POST,PUT,DELETE,HEAD,PATCH')
+    next()
+})
+
+server.get('/', (req, res) => {
     res.status(200).json({
         message: 'Server is Working !',
     })
 })
 
-server.listen(process.env.PORT, (error) => {
-    if (!error) {
-        console.log('http://localhost:' + process.env.PORT)
-    } else {
-        console.log("Error occurred, server can't start", error)
-    }
+import { usersRoutes } from './Routes/index.js'
+import { signUpRoutes } from './Routes/index.js'
+import { loginRoutes } from './Routes/index.js'
+
+server.use('/users', usersRoutes)
+server.use('/signUp', signUpRoutes)
+server.use('/login', loginRoutes)
+
+const PORT = process.env.PORT || 3000
+
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 })
 
 export default server
